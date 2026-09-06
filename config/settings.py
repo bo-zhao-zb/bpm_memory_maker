@@ -30,6 +30,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "accounts",
+    "catalog",
+    "albums",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -82,6 +85,11 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+AUTH_USER_MODEL = "accounts.User"
+ALBUM_PHOTO_LIMIT = int(os.getenv("ALBUM_PHOTO_LIMIT", "100"))
+DRAFT_RETENTION_DAYS = int(os.getenv("DRAFT_RETENTION_DAYS", "30"))
+if ALBUM_PHOTO_LIMIT < 1 or DRAFT_RETENTION_DAYS < 1:
+    raise ImproperlyConfigured("Album limits and retention days must be positive integers.")
 
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
