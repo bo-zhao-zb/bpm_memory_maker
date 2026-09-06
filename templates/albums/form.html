@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% block title %}{% if album %}Edit album{% else %}New album{% endif %} | BPM Memory Maker{% endblock %}
+{% block page_class %}narrow-page{% endblock %}
 {% block content %}
 <a class="back-link" href="{% if album %}{{ album.get_absolute_url }}{% else %}{% url 'albums:list' %}{% endif %}">{% include "components/icon.html" with name="arrow-left" %} {% if album %}Back to album{% else %}All albums{% endif %}</a>
 <section class="form-page">
+  <div class="form-symbol" aria-hidden="true">{% include "components/icon.html" with name="book-image" %}</div>
   <p class="eyebrow">Your collection</p>
   <h1>{% if album %}Edit album{% else %}New album{% endif %}</h1>
   <form method="post" class="stacked-form">

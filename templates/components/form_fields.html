@@ -5,7 +5,17 @@
   {% else %}
     <div class="field">
       <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-      {{ field }}
+      {% if field.field.widget.input_type == 'password' %}
+        <div class="password-field">
+          {{ field }}
+          <button class="password-toggle" type="button" data-password-toggle aria-controls="{{ field.id_for_label }}" aria-label="Show password" title="Show password" aria-pressed="false" hidden>
+            <span data-password-show>{% include "components/icon.html" with name="eye" %}</span>
+            <span data-password-hide hidden>{% include "components/icon.html" with name="eye-off" %}</span>
+          </button>
+        </div>
+      {% else %}
+        {{ field }}
+      {% endif %}
       {% if field.errors %}<div class="field-errors" role="alert">{{ field.errors }}</div>{% endif %}
       {% if field.help_text %}<p class="field-help" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</p>{% endif %}
     </div>

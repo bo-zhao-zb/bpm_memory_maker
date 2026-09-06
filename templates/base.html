@@ -6,23 +6,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}BPM Memory Maker{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <script src="{% static 'js/ui.js' %}" defer></script>
 </head>
-<body>
+<body class="{% if user.is_authenticated %}workspace{% else %}signed-out{% endif %} {% block body_class %}{% endblock %}">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
-    <a class="brand" href="{% url 'albums:list' %}"><span class="brand-mark">BPM</span><span>Memory Maker</span></a>
+    <a class="brand" href="{% url 'albums:list' %}" aria-label="BPM Memory Maker"><span class="brand-mark">{% include "components/icon.html" with name="book-image" %}</span><span class="brand-name">Memory Maker<span class="brand-byline">BY BPM</span></span></a>
     {% if user.is_authenticated %}
-      <nav aria-label="Account">
-        <span class="account-name">{{ user.get_short_name|default:user.username }}</span>
-        {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
-        <form action="{% url 'account_logout' %}" method="post">{% csrf_token %}<button class="text-button" type="submit">Sign out</button></form>
+      <nav class="workspace-nav" aria-label="Workspace">
+        <a class="nav-link active" href="{% url 'albums:list' %}"{% if request.resolver_match.url_name == 'list' %} aria-current="page"{% endif %}>Albums</a>
+        {% if user.is_staff %}<a class="nav-link" href="{% url 'admin:index' %}">Admin</a>{% endif %}
       </nav>
+      <div class="account-menu">
+        <span class="account-avatar" aria-hidden="true">{{ user.get_short_name|default:user.username|first|upper }}</span>
+        <span class="account-name" title="{{ user.get_short_name|default:user.username }}">{{ user.get_short_name|default:user.username }}</span>
+        <form action="{% url 'account_logout' %}" method="post">{% csrf_token %}<button class="text-button signout-button" type="submit" aria-label="Sign out" title="Sign out">{% include "components/icon.html" with name="log-out" %}<span class="signout-label">Sign out</span></button></form>
+      </div>
     {% endif %}
   </header>
-  <main id="main" class="page" tabindex="-1">
+  <main id="main" class="page {% block page_class %}{% endblock %}" tabindex="-1">
     {% if messages %}<div class="messages" role="status">{% for message in messages %}<p class="notice">{{ message }}</p>{% endfor %}</div>{% endif %}
     {% block content %}{% endblock %}
   </main>
-  <footer class="site-footer"><span>BPM Memory Maker</span><span>Your albums, kept private.</span></footer>
+  <footer class="site-footer"><span>Memory Maker <span class="footer-separator" aria-hidden="true">/</span> BPM</span><span class="footer-note">A little closer to your favourite moments.</span></footer>
 </body>
 </html>

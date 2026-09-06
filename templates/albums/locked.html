@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Album unavailable | BPM Memory Maker{% endblock %}
+{% block page_class %}narrow-page{% endblock %}
 {% block content %}
 <section class="form-page"><h1>This album is read-only</h1><p>Only unexpired draft albums can be changed or deleted here.</p><a class="button secondary" href="{{ album.get_absolute_url }}">Back to album</a></section>
 {% endblock %}

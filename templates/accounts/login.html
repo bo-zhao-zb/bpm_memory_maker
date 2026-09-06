@@ -1,10 +1,16 @@
 {% extends "base.html" %}
-{% load socialaccount %}
+{% load socialaccount static %}
 {% block title %}Sign in | BPM Memory Maker{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+{% block page_class %}auth-main{% endblock %}
 {% block content %}
+<div class="auth-art" aria-hidden="true">
+  <div class="photo-print print-left"><img src="{% static 'vendor/memory-journey.jpg' %}" alt="" width="900" height="1350"></div>
+  <div class="photo-print print-centre"><img src="{% static 'vendor/memory-mountains.jpg' %}" alt="" width="900" height="600" fetchpriority="high"></div>
+  <div class="photo-print print-right"><img src="{% static 'vendor/memory-lake.jpg' %}" alt="" width="900" height="600"></div>
+</div>
 <section class="form-page sign-in">
-  <p class="eyebrow">BPM Memory Maker</p>
-  <h1>Sign in</h1>
+  <div class="auth-heading"><p class="eyebrow">Your personal collection</p><h1>Sign in</h1></div>
   {% if providers %}
     <div class="social-options">
       {% if 'google' in providers %}<form action="{% provider_login_url 'google' process='login' %}" method="post">{% csrf_token %}<button class="button secondary full-width" type="submit">Continue with Google</button></form>{% endif %}
@@ -14,10 +20,10 @@
   {% if development_login %}
     <form method="post" class="stacked-form">
       {% csrf_token %}
-      <p class="section-label">Development account</p>
+      <div class="form-divider"><span>Development account</span></div>
       {% include "components/form_fields.html" %}
       {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
-      <button class="button full-width" type="submit">Sign in</button>
+      <button class="button full-width" type="submit">Sign in {% include "components/icon.html" with name="arrow-right" %}</button>
     </form>
   {% elif not providers %}
     <p class="notice">Sign-in is temporarily unavailable.</p>

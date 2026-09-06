@@ -2,20 +2,23 @@
 {% block title %}Your albums | BPM Memory Maker{% endblock %}
 {% block content %}
 <div class="page-heading">
-  <div><p class="eyebrow">Your collection</p><h1>Albums <span class="count">{{ page_obj.paginator.count }}</span></h1></div>
+  <div><p class="eyebrow">The collection</p><h1>Your albums</h1></div>
   <a class="button" href="{% url 'albums:create' %}">{% include "components/icon.html" with name="plus" %} New album</a>
 </div>
+<div class="collection-bar"><span><strong>{{ page_obj.paginator.count }}</strong> album{{ page_obj.paginator.count|pluralize }}</span>{% if page_obj %}<span class="sort-caption">Recently updated</span>{% endif %}</div>
 {% if page_obj %}
   <div class="album-grid">
     {% for album in page_obj %}
       <article class="album-card">
         <a class="album-link" href="{{ album.get_absolute_url }}">
-          <div class="album-cover" aria-hidden="true"><span class="album-monogram">{{ album.name|first|upper }}</span><span class="cover-icon">{% include "components/icon.html" with name="book-image" %}</span></div>
+          <div class="album-cover" aria-hidden="true">
+            <div class="album-book"><span class="book-label">MEMORY MAKER</span>{% include "components/icon.html" with name="images" %}<span class="book-year">{{ album.created_at|date:"Y" }}</span></div>
+            <span class="cover-number">{{ forloop.counter|stringformat:"02d" }}</span>
+          </div>
           <div class="album-summary">
-            <span class="badge">{% if album.state == 'draft' and not album.is_editable %}Expired{% else %}{{ album.get_state_display }}{% endif %}</span>
-            <h2>{{ album.name }}</h2>
-            <p>{{ album.default_print_product }} <span aria-hidden="true">/</span> 0 photos</p>
-            <p class="album-date">Updated {{ album.updated_at|date:"j M Y" }}</p>
+            <div class="album-title"><h2>{{ album.name }}</h2>{% include "components/icon.html" with name="arrow-right" %}</div>
+            <p>{{ album.default_print_product }} <span class="meta-separator" aria-hidden="true">&middot;</span> 0 photos</p>
+            <div class="album-bottom"><p class="album-date">Updated {{ album.updated_at|date:"j M Y" }}</p><span class="badge">{% if album.state == 'draft' and not album.is_editable %}Expired{% else %}{{ album.get_state_display }}{% endif %}</span></div>
           </div>
         </a>
       </article>
@@ -29,8 +32,8 @@
     </nav>
   {% endif %}
 {% else %}
-  <section class="empty-state">
-    <div class="empty-mark" aria-hidden="true">{% include "components/icon.html" with name="book-image" %}</div>
+  <section class="empty-state collection-empty">
+    {% include "components/empty_art.html" with name="book-image" %}
     <h2>No albums yet</h2>
     <a class="button secondary" href="{% url 'albums:create' %}">{% include "components/icon.html" with name="plus" %} Create your first album</a>
   </section>

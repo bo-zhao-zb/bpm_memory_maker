@@ -11,6 +11,29 @@ class SignInTests(TestCase):
         )
 
     @override_settings(DEBUG=True)
+    def test_login_has_local_assets_and_progressive_password_control(self):
+        response = self.client.get(reverse("account_login"))
+        self.assertContains(response, 'src="/static/js/ui.js"')
+        self.assertContains(response, 'src="/static/vendor/memory-mountains.jpg"')
+        self.assertContains(response, 'type="password"')
+        self.assertContains(response, 'aria-controls="id_password"')
+        self.assertRegex(
+            response.content.decode(), r"<button[^>]*data-password-toggle[^>]* hidden>"
+        )
+
+    @override_settings(DEBUG=True)
+    def test_invalid_login_keeps_feedback_without_echoing_password(self):
+        response = self.client.post(
+            reverse("account_login"),
+            {"username": "tester", "password": "deliberately-incorrect-ui-test"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["form"].non_field_errors())
+        self.assertContains(response, 'role="alert"')
+        self.assertNotContains(response, "deliberately-incorrect-ui-test")
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    @override_settings(DEBUG=True)
     def test_development_login_and_post_logout(self):
         response = self.client.post(
             reverse("account_login"),

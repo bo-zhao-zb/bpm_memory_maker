@@ -36,7 +36,8 @@ PostgreSQL; CI runs against PostgreSQL 16 and SQLite.
 - Configurable draft retention and per-album photo limits.
 - Administrator-managed print sizes. `seed_catalog` adds the four planned sizes
 	without replacing administrator changes; these are not fulfilment-provider products.
-- Responsive Django templates with locally served fonts and Lucide icons.
+- Responsive photo-studio interface with local photography, fonts, Lucide icons
+	and a progressively enhanced password-visibility control.
 - Google/Facebook OAuth entry points through django-allauth; no automatic account
 	linking by matching email. Live provider callbacks still require credentials and testing.
 
