@@ -1,3 +1,5 @@
+@font-face { font-family: "DM Sans"; font-style: normal; font-weight: 400; font-display: swap; src: url("../vendor/dm-sans-regular.woff2") format("woff2"); }
+@font-face { font-family: "DM Sans"; font-style: normal; font-weight: 700; font-display: swap; src: url("../vendor/dm-sans-bold.woff2") format("woff2"); }
 :root {
   --ink: #24312d;
   --muted: #596a62;
@@ -42,6 +44,10 @@ h2 { font-size: 21px; line-height: 1.35; margin: 0 0 12px; }
 .count { font-size: 16px; vertical-align: middle; color: var(--muted); margin-left: 8px; }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 11px 18px; background: var(--green); border: 1px solid var(--green); border-radius: 5px; color: white; font-size: 14px; font-weight: 700; line-height: 1.4; text-decoration: none; text-align: center; }
 .button:hover { background: var(--green-dark); border-color: var(--green-dark); }
+.icon { flex: 0 0 20px; width: 20px; height: 20px; vertical-align: middle; }
+.button:not(.secondary):not(.danger-outline) .icon { filter: invert(1); }
+.button.icon-button { width: 44px; height: 44px; flex: 0 0 44px; padding: 11px; }
+.button.danger-outline:hover .icon { filter: invert(1); }
 .button.secondary { background: var(--surface); color: var(--ink); border-color: #9bab9f; }
 .button.secondary:hover { background: #edf1ef; }
 .button.danger { background: var(--red); border-color: var(--red); }
@@ -50,17 +56,19 @@ h2 { font-size: 21px; line-height: 1.35; margin: 0 0 12px; }
 .full-width { width: 100%; }
 .actions, .form-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .actions { flex-shrink: 0; }
-.back-link { display: inline-block; margin-bottom: 28px; font-size: 14px; }
+.back-link { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; margin-bottom: 28px; font-size: 14px; }
 .empty-state { text-align: center; border-top: 1px solid var(--line); padding: 76px 16px; }
 .empty-mark { width: 72px; height: 72px; border: 1px solid var(--line); border-radius: 6px; background: white; display: grid; place-items: center; margin: 0 auto 24px; color: var(--muted); font-size: 16px; }
+.empty-mark .icon { width: 32px; height: 32px; opacity: 0.7; }
 .empty-state h2 { font-size: 23px; margin-bottom: 24px; }
 .album-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
 .album-card { background: white; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 .album-link { display: block; height: 100%; color: inherit; text-decoration: none; }
 .album-link:focus-visible { outline-offset: -4px; }
 .album-card:hover { border-color: var(--green); }
-.album-cover { aspect-ratio: 16 / 9; display: grid; place-items: center; background: repeating-linear-gradient(135deg, #e7eeea 0, #e7eeea 1px, #eef3f0 1px, #eef3f0 10px); border-bottom: 1px solid var(--line); }
-.album-card:nth-child(3n + 2) .album-cover { background: repeating-linear-gradient(135deg, #e8e5ea 0, #e8e5ea 1px, #f3f0f4 1px, #f3f0f4 10px); }
+.album-cover { position: relative; aspect-ratio: 16 / 9; display: grid; place-items: center; background: repeating-linear-gradient(135deg, #e7eeea 0, #e7eeea 1px, #eef3f0 1px, #eef3f0 10px); border-bottom: 1px solid var(--line); }
+.cover-icon { position: absolute; right: 18px; bottom: 16px; opacity: 0.5; }
+.album-card:nth-child(3n + 2) .album-cover { background: repeating-linear-gradient(135deg, #eadfe1 0, #eadfe1 1px, #f5eff0 1px, #f5eff0 10px); }
 .album-card:nth-child(3n) .album-cover { background: repeating-linear-gradient(135deg, #e6e9ed 0, #e6e9ed 1px, #eff2f6 1px, #eff2f6 10px); }
 .album-monogram { font-family: Georgia, serif; font-size: 48px; color: #53645a; }
 .album-summary { padding: 22px; }

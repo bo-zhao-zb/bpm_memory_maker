@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Delete album | BPM Memory Maker{% endblock %}
 {% block content %}
-<a class="back-link" href="{{ album.get_absolute_url }}">Back to album</a>
+<a class="back-link" href="{{ album.get_absolute_url }}">{% include "components/icon.html" with name="arrow-left" %} Back to album</a>
 <section class="form-page">
   <p class="eyebrow">Delete draft</p>
   <h1>Delete this album?</h1>

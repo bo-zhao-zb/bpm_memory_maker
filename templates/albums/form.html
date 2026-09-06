@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{% if album %}Edit album{% else %}New album{% endif %} | BPM Memory Maker{% endblock %}
 {% block content %}
-<a class="back-link" href="{% if album %}{{ album.get_absolute_url }}{% else %}{% url 'albums:list' %}{% endif %}">{% if album %}Back to album{% else %}All albums{% endif %}</a>
+<a class="back-link" href="{% if album %}{{ album.get_absolute_url }}{% else %}{% url 'albums:list' %}{% endif %}">{% include "components/icon.html" with name="arrow-left" %} {% if album %}Back to album{% else %}All albums{% endif %}</a>
 <section class="form-page">
   <p class="eyebrow">Your collection</p>
   <h1>{% if album %}Edit album{% else %}New album{% endif %}</h1>

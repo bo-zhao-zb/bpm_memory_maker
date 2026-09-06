@@ -3,14 +3,14 @@
 {% block content %}
 <div class="page-heading">
   <div><p class="eyebrow">Your collection</p><h1>Albums <span class="count">{{ page_obj.paginator.count }}</span></h1></div>
-  <a class="button" href="{% url 'albums:create' %}">New album</a>
+  <a class="button" href="{% url 'albums:create' %}">{% include "components/icon.html" with name="plus" %} New album</a>
 </div>
 {% if page_obj %}
   <div class="album-grid">
     {% for album in page_obj %}
       <article class="album-card">
         <a class="album-link" href="{{ album.get_absolute_url }}">
-          <div class="album-cover" aria-hidden="true"><span class="album-monogram">{{ album.name|first|upper }}</span></div>
+          <div class="album-cover" aria-hidden="true"><span class="album-monogram">{{ album.name|first|upper }}</span><span class="cover-icon">{% include "components/icon.html" with name="book-image" %}</span></div>
           <div class="album-summary">
             <span class="badge">{% if album.state == 'draft' and not album.is_editable %}Expired{% else %}{{ album.get_state_display }}{% endif %}</span>
             <h2>{{ album.name }}</h2>
@@ -30,9 +30,9 @@
   {% endif %}
 {% else %}
   <section class="empty-state">
-    <div class="empty-mark" aria-hidden="true">BPM</div>
+    <div class="empty-mark" aria-hidden="true">{% include "components/icon.html" with name="book-image" %}</div>
     <h2>No albums yet</h2>
-    <a class="button secondary" href="{% url 'albums:create' %}">Create your first album</a>
+    <a class="button secondary" href="{% url 'albums:create' %}">{% include "components/icon.html" with name="plus" %} Create your first album</a>
   </section>
 {% endif %}
 {% endblock %}
