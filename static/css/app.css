@@ -45,7 +45,7 @@ button, input, select, a { touch-action: manipulation; }
 .account-name { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .text-button { border: 0; min-height: 44px; padding: 10px; background: none; color: var(--muted); font-size: 12px; border-radius: 5px; white-space: nowrap; }
 .text-button:hover { background: var(--paper); color: var(--ink); }
-.signout-button { display: inline-flex; align-items: center; gap: 8px; }
+.signout-button { display: inline-flex; align-items: center; gap: 8px; min-width: 44px; }
 .signout-button .icon { width: 17px; height: 17px; flex-basis: 17px; opacity: 0.65; }
 .page { width: min(1200px, 90%); margin: 0 auto; padding: 52px 0 80px; flex: 1; }
 .page:focus { outline: none; }
@@ -88,7 +88,7 @@ h2 { font-size: 21px; line-height: 1.35; margin: 0 0 12px; }
 .album-link { display: block; height: 100%; color: inherit; text-decoration: none; }
 .album-link:focus-visible { outline-offset: 6px; border-radius: 8px; }
 .album-cover { position: relative; aspect-ratio: 4 / 3; display: grid; place-items: center; overflow: hidden; border: 1px solid #dde2e0; border-radius: 8px; background: #e9eeeb; }
-.cover-number { position: absolute; right: 18px; bottom: 16px; color: #6d7971; font-size: 10px; }
+.cover-number { position: absolute; right: 18px; bottom: 16px; color: #535c56; font-size: 10px; }
 .album-card:nth-child(3n + 2) .album-cover { background: #f3e8e6; border-color: #eadeda; }
 .album-card:nth-child(3n) .album-cover { background: #e9edf3; border-color: #dde2eb; }
 .album-book { position: relative; width: 45%; height: 73%; padding: 24px 12px 18px 20px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; border-radius: 2px 5px 4px 2px; background-color: #527164; background-image: repeating-linear-gradient(0deg, transparent 0, transparent 2px, #ffffff08 2px, #ffffff08 3px); color: #fff; transform: rotate(-7deg); box-shadow: 8px 14px 18px #1b302724, 1px 2px 2px #1b302730; }
@@ -97,8 +97,8 @@ h2 { font-size: 21px; line-height: 1.35; margin: 0 0 12px; }
 .album-book .icon { width: 35px; height: 35px; filter: invert(1); opacity: 0.85; }
 .book-label { font-size: 8px; text-align: center; }
 .book-year { font-size: 16px; font-family: Georgia, serif; }
-.album-card:nth-child(3n + 2) .album-book { background-color: #b66c63; transform: rotate(6deg); }
-.album-card:nth-child(3n) .album-book { background-color: #687c9b; transform: rotate(-5deg); }
+.album-card:nth-child(3n + 2) .album-book { background-color: #9f5b53; transform: rotate(6deg); }
+.album-card:nth-child(3n) .album-book { background-color: #596d89; transform: rotate(-5deg); }
 .album-summary { padding: 18px 2px 0; }
 .album-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
 .album-title h2 { font-size: 17px; margin: 0; min-width: 0; }
@@ -179,7 +179,8 @@ input[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(--re
   h1 { font-size: 28px; }
   .page-heading { flex-wrap: wrap; gap: 20px; }
   .album-grid { grid-template-columns: minmax(0, 1fr); }
-  .album-facts { grid-template-columns: 1fr; gap: 20px; }
+  .album-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 16px; padding-bottom: 24px; }
+  .album-facts > div:last-child { grid-column: 1 / -1; }
   .empty-state { padding: 48px 12px; }
   .site-footer { flex-wrap: wrap; }
   .footer-note { display: none; }
