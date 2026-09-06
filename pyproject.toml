@@ -1,0 +1,22 @@
+[project]
+name = "bpm-memory-maker"
+version = "0.1.0"
+description = "A photo printing service, starting with private album management."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "Django>=5.2,<5.3",
+    "dj-database-url>=3,<4",
+    "django-allauth[socialaccount]>=65,<66",
+    "psycopg[binary]>=3.2,<4",
+]
+
+[dependency-groups]
+dev = ["ruff>=0.12,<1"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
