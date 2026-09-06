@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ album.name }} | BPM Memory Maker{% endblock %}
+{% block content %}
+<a class="back-link" href="{% url 'albums:list' %}">All albums</a>
+<div class="page-heading">
+  <div><p class="eyebrow">{% if album.state == 'draft' and not album.is_editable %}Expired{% else %}{{ album.get_state_display }}{% endif %} album</p><h1>{{ album.name }}</h1></div>
+  {% if album.is_editable %}<div class="actions"><a class="button secondary" href="{% url 'albums:edit' album.pk %}">Edit album</a><a class="button danger-outline" href="{% url 'albums:delete' album.pk %}">Delete album</a></div>{% endif %}
+</div>
+<dl class="album-facts">
+  <div><dt>Default print size</dt><dd>{{ album.default_print_product }}</dd></div>
+  <div><dt>Photos</dt><dd>0 of {{ album.photo_limit }}</dd></div>
+  <div><dt>Expiry date</dt><dd><time datetime="{{ album.expires_at|date:'c' }}">{{ album.expires_at|date:"j M Y, H:i T" }}</time></dd></div>
+</dl>
+<section class="empty-state"><div class="empty-mark" aria-hidden="true">BPM</div><h2>No photos yet</h2></section>
+{% endblock %}

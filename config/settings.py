@@ -30,6 +30,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.facebook",
     "accounts",
     "catalog",
     "albums",
@@ -40,6 +45,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -84,8 +90,40 @@ USE_I18N = True
 USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "accounts.User"
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+LOGIN_URL = "account_login"
+LOGIN_REDIRECT_URL = "albums:list"
+LOGOUT_REDIRECT_URL = "account_login"
+SOCIALACCOUNT_ONLY = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_LOGIN_ON_GET = False
+SOCIALACCOUNT_STORE_TOKENS = False
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = False
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = False
+SOCIALACCOUNT_PROVIDERS = {}
+for provider in ("google", "facebook"):
+    client_id = os.getenv(f"{provider.upper()}_CLIENT_ID", "")
+    client_secret = os.getenv(f"{provider.upper()}_CLIENT_SECRET", "")
+    if bool(client_id) != bool(client_secret):
+        raise ImproperlyConfigured(f"Set both {provider.upper()} client ID and secret, or neither.")
+    if client_id:
+        SOCIALACCOUNT_PROVIDERS[provider] = {
+            "APPS": [{"client_id": client_id, "secret": client_secret, "key": ""}],
+        }
+        if provider == "google":
+            SOCIALACCOUNT_PROVIDERS[provider]["OAUTH_PKCE_ENABLED"] = True
+EMAIL_BACKEND = os.getenv(
+    "DJANGO_EMAIL_BACKEND",
+    "django.core.mail.backends.locmem.EmailBackend"
+    if DEBUG
+    else "django.core.mail.backends.smtp.EmailBackend",
+)
 ALBUM_PHOTO_LIMIT = int(os.getenv("ALBUM_PHOTO_LIMIT", "100"))
 DRAFT_RETENTION_DAYS = int(os.getenv("DRAFT_RETENTION_DAYS", "30"))
 if ALBUM_PHOTO_LIMIT < 1 or DRAFT_RETENTION_DAYS < 1:

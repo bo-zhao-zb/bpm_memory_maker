@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+{% block title %}Sign in | BPM Memory Maker{% endblock %}
+{% block content %}
+<section class="form-page sign-in">
+  <p class="eyebrow">BPM Memory Maker</p>
+  <h1>Sign in</h1>
+  {% if providers %}
+    <div class="social-options">
+      {% if 'google' in providers %}<form action="{% provider_login_url 'google' process='login' %}" method="post">{% csrf_token %}<button class="button secondary full-width" type="submit">Continue with Google</button></form>{% endif %}
+      {% if 'facebook' in providers %}<form action="{% provider_login_url 'facebook' process='login' %}" method="post">{% csrf_token %}<button class="button secondary full-width" type="submit">Continue with Facebook</button></form>{% endif %}
+    </div>
+  {% endif %}
+  {% if development_login %}
+    <form method="post" class="stacked-form">
+      {% csrf_token %}
+      <p class="section-label">Development account</p>
+      {% include "components/form_fields.html" %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <button class="button full-width" type="submit">Sign in</button>
+    </form>
+  {% elif not providers %}
+    <p class="notice">Sign-in is temporarily unavailable.</p>
+  {% endif %}
+</section>
+{% endblock %}

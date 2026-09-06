@@ -1,0 +1,1 @@
+"""Catalogue command entry points."""

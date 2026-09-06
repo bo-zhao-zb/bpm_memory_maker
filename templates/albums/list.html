@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Your albums | BPM Memory Maker{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div><p class="eyebrow">Your collection</p><h1>Albums <span class="count">{{ page_obj.paginator.count }}</span></h1></div>
+  <a class="button" href="{% url 'albums:create' %}">New album</a>
+</div>
+{% if page_obj %}
+  <div class="album-grid">
+    {% for album in page_obj %}
+      <article class="album-card">
+        <a class="album-link" href="{{ album.get_absolute_url }}">
+          <div class="album-cover" aria-hidden="true"><span class="album-monogram">{{ album.name|first|upper }}</span></div>
+          <div class="album-summary">
+            <span class="badge">{% if album.state == 'draft' and not album.is_editable %}Expired{% else %}{{ album.get_state_display }}{% endif %}</span>
+            <h2>{{ album.name }}</h2>
+            <p>{{ album.default_print_product }} <span aria-hidden="true">/</span> 0 photos</p>
+            <p class="album-date">Updated {{ album.updated_at|date:"j M Y" }}</p>
+          </div>
+        </a>
+      </article>
+    {% endfor %}
+  </div>
+  {% if page_obj.has_other_pages %}
+    <nav class="pagination" aria-label="Album pages">
+      {% if page_obj.has_previous %}<a class="button secondary" href="?page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+      <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}<a class="button secondary" href="?page={{ page_obj.next_page_number }}">Next</a>{% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <section class="empty-state">
+    <div class="empty-mark" aria-hidden="true">BPM</div>
+    <h2>No albums yet</h2>
+    <a class="button secondary" href="{% url 'albums:create' %}">Create your first album</a>
+  </section>
+{% endif %}
+{% endblock %}

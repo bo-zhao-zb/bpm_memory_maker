@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Delete album | BPM Memory Maker{% endblock %}
+{% block content %}
+<a class="back-link" href="{{ album.get_absolute_url }}">Back to album</a>
+<section class="form-page">
+  <p class="eyebrow">Delete draft</p>
+  <h1>Delete this album?</h1>
+  <p class="deletion-summary">&ldquo;{{ album.name }}&rdquo; will be deleted immediately. This cannot be undone.</p>
+  <form method="post" class="stacked-form">
+    {% csrf_token %}
+    {% include "components/form_fields.html" %}
+    <div class="form-actions"><button class="button danger" type="submit">Delete album</button><a class="button secondary" href="{{ album.get_absolute_url }}">Keep album</a></div>
+    {% if form.errors %}<a href="{% url 'albums:delete' album.pk %}">Reload album</a>{% endif %}
+  </form>
+</section>
+{% endblock %}

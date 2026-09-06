@@ -1,0 +1,28 @@
+{% load static %}
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}BPM Memory Maker{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="{% url 'albums:list' %}"><span class="brand-mark">BPM</span><span>Memory Maker</span></a>
+    {% if user.is_authenticated %}
+      <nav aria-label="Account">
+        <span class="account-name">{{ user.get_short_name|default:user.username }}</span>
+        {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
+        <form action="{% url 'account_logout' %}" method="post">{% csrf_token %}<button class="text-button" type="submit">Sign out</button></form>
+      </nav>
+    {% endif %}
+  </header>
+  <main id="main" class="page" tabindex="-1">
+    {% if messages %}<div class="messages" role="status">{% for message in messages %}<p class="notice">{{ message }}</p>{% endfor %}</div>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer"><span>BPM Memory Maker</span><span>Your albums, kept private.</span></footer>
+</body>
+</html>
