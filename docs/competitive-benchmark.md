@@ -1,4 +1,4 @@
-# UK Competitive Benchmark and UI Direction
+# UK Competitive Benchmark and Product Differentiation
 
 Reviewed: 6 September 2026.
 Application baseline: `3d32c7d`; implemented scope is described in
@@ -16,9 +16,15 @@ yet competitive as an end-to-end printing experience. Users can manage album
 metadata, not upload, review crops, buy prints or track delivery. Attractive
 sign-in and empty-album screens cannot establish parity with working editors.
 
-Working signature: **BPM Print Proof**. This is a proposed interaction concept,
-not a uniqueness or trademark claim: the customer can understand exactly which
-version and crop will be printed, what it costs, and what happens to the files.
+Here, **signature means product characteristics that give customers a reason to
+choose us**, not a logo, colour palette or named feature. The proposed positioning
+is: help people turn everyday phone photos into prints they can approve with
+confidence, without needing photo-editing expertise.
+
+"Print proof" is only a working interaction concept supporting that positioning:
+the customer can understand which version and crop will be printed, what it costs,
+and what happens to the files. It is not a chosen product name or a claim that
+competitors lack these capabilities.
 
 ## Evidence and Limits
 
@@ -96,9 +102,32 @@ checkout conversion, delivery, pricing or overall ease of use.
 Small supporting text also needs a readability review with actual users. Minimal
 layouts should not become low-contrast or undersized interfaces in pursuit of style.
 
-## Proposed Signature: BPM Print Proof
+## Proposed Standout Characteristics
 
-### Visual Language
+1. **Print confidence, not an unexplained score.** Explain whether a photo suits
+  the selected print size and crop, identify specific problems and offer a clear
+  next action. Success means fewer unwanted crops and avoidable print mistakes.
+2. **Faithful, optional improvement.** Help with exposure, colour and other
+  supported corrections without making creative transformations the default.
+  Preserve originals, make changes visible and let customers accept or reject
+  them. Never promise preserved likeness without testing the actual operation.
+3. **A focused path from photos to prints.** Prioritise batch preparation,
+  mobile usability and recovery from interruptions over promotional distractions
+  or a broad gift catalogue. Show the full price before payment.
+4. **Understandable control of personal photos.** Explain AI participation,
+  retention and deletion in context, backed by implemented processing and
+  deletion workflows. Temporary storage is a deliberate trade-off, not a
+  permanent photo archive; do not obscure that limitation.
+
+These characteristics form a proposed combination, not established competitive
+advantages. Useful comparisons must demonstrate better task completion, fewer
+mistakes or greater trust. The current foundation supports parts of this direction;
+uploads, improvements, ordering and file-lifecycle enforcement are still pending.
+
+### Supporting Visual Language
+
+Visual design should make those characteristics easy to recognise and use; it
+does not substitute for them.
 
 - Keep the existing DM Sans typography, neutral surfaces, charcoal actions and
   restrained coral accent. Let customer photos supply most of the colour.
@@ -110,7 +139,7 @@ layouts should not become low-contrast or undersized interfaces in pursuit of st
 - Use the same spacing, status vocabulary and icon treatment in gallery, viewer,
   review, checkout and order status. Respect reduced motion and keyboard use.
 
-### Distinctive Interaction
+### Supporting Print-Review Interaction
 
 A proposed print-proof view should answer five questions in one place:
 
@@ -159,13 +188,23 @@ Proposed acceptance gates, not measured results:
 
 ## Recommended Next Work
 
-1. Agree the loose-print visual metaphor and Print Proof concept. Produce a
-   clickable desktop/mobile prototype of gallery, crop review and final summary,
-   using clearly labelled synthetic fixtures, not fake functioning controls.
-2. Test that prototype with a small group against the matched competitor task.
+1. Fix the reproduced SQLite write-contention and unconfigured-OAuth-route errors
+  with focused regression tests. Verify supported database behaviour without
+  assuming SQLite results prove PostgreSQL correctness.
+2. Validate the proposed characteristics with target users. Produce a clickable
+  desktop/mobile prototype of gallery, crop review and final summary using
+  clearly labelled synthetic fixtures, not fake functioning controls. Use a
+  loose-print rather than bound-photo-book metaphor.
+3. Test that prototype with a small group against the matched competitor task.
    Refine terminology and information hierarchy before another cosmetic redesign.
-3. Implement the upload/gallery milestone with those states and acceptance tests.
-4. Integrate pricing, payment and fulfilment only after their contracts are agreed.
+4. Implement the upload/gallery milestone with validation, private local storage
+  for development, previews, limits and recovery states. Plan production storage
+  and worker deployment explicitly rather than binding them to the SSH VM.
+5. Integrate pricing, payment and fulfilment only after their contracts are agreed.
+
+Keep a tested local Git checkpoint for each working milestone and record notable
+changes in [CHANGELOG.md](../CHANGELOG.md). Keep deployment and provider decisions
+open while validating the foundation and prototype.
 
 Do not add native apps, facial recognition, a broad gift catalogue, QR transfers
 or more AI features solely because a competitor has them. They are separate scope

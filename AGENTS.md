@@ -52,3 +52,6 @@ uv run --env-file .env.example python manage.py makemigrations --check --dry-run
   amounts of JavaScript only when needed. Preserve upstream asset licences.
 - Update documentation and these instructions when the implemented behaviour
   or required commands change. State unverified integrations explicitly.
+- Record notable behaviour and workflow changes in [CHANGELOG.md](CHANGELOG.md)
+  under `Unreleased`; do not treat checkpoint commits as releases or list planned
+  features as implemented.

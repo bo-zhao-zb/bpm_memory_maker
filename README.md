@@ -3,6 +3,41 @@
 A Django 5.2 LTS foundation for the photo printing service described in [plan.md](plan.md).
 Python 3.12 is managed by `uv`; the VM's system Python is not modified.
 
+See [CHANGELOG.md](CHANGELOG.md) for notable implemented changes and known
+limitations, and [the competitor benchmark](docs/competitive-benchmark.md) for
+proposed product positioning and experience goals.
+
+## Project Structure
+
+This is a Django web application, not a distributable Python library. Its flat,
+domain-oriented layout is intentional:
+
+| Path | Responsibility |
+| --- | --- |
+| [config/](config/) | Django settings, root URLs and ASGI/WSGI entry points |
+| [accounts/](accounts/) | Custom user model and authentication |
+| [catalog/](catalog/) | Print products, admin and catalogue seeding |
+| [albums/](albums/) | Album models, service-layer rules, forms, views and tests |
+| [templates/](templates/) | Shared shell, reusable components and namespaced app pages |
+| [static/](static/) | Local CSS, small JavaScript enhancements and licensed assets |
+| [.github/workflows/](.github/workflows/) | Automated checks, including both database configurations |
+| [docs/](docs/) | Design and product decisions with supporting evidence |
+| [pyproject.toml](pyproject.toml) and [uv.lock](uv.lock) | Python requirements, dependency groups, lint configuration and reproducible dependencies |
+
+Apps own their migrations and tests. Small apps currently use `tests.py`; the
+larger album app uses a `tests/` package. Keep one test layout per app and split a test
+module when its size warrants it. Business rules belong in service functions so
+future interfaces can reuse them.
+
+A `src/` layout is useful for packaged libraries but is not required for a modern
+Django application. Separate frontend/backend repositories, a JavaScript build
+pipeline and microservices are likewise not prerequisites. Retain this layout
+unless an actual packaging or deployment need justifies a change.
+
+The local `.venv`, caches and SQLite database are ignored development artefacts,
+not source code or production storage. Hosting configuration will be added when
+the Azure deployment approach is agreed.
+
 ## Development
 
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then run:

@@ -1,0 +1,70 @@
+# Changelog
+
+Notable project changes are recorded here, grouped by user or developer impact
+rather than individual commits. This follows the categories used by
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+Keep ongoing work under `Unreleased`. Move completed entries into a dated version
+section when an explicit release is made. Local checkpoint commits and the version
+in `pyproject.toml` do not, on their own, declare a release.
+
+## [Unreleased]
+
+### Added
+
+- Django 5.2 LTS foundation with Python 3.12 managed by `uv`, locked dependencies,
+  environment-based settings and a public liveness endpoint.
+- Separate accounts, print catalogue and album apps, initial migrations and
+  Django admin registration.
+- Private draft album creation, viewing, renaming, print-size selection and
+  confirmed deletion, with owner checks and stale-version conflict detection.
+- Configurable album photo limits and expiry dates; expired and non-draft albums
+  are read-only. Album administration is read-only.
+- Repeatable catalogue seeding for the four planned print sizes, preserving
+  administrator changes and protecting referenced products from deletion.
+- Google/Facebook OAuth integration entry points through django-allauth, with
+  development-only application password sign-in and no automatic email-based
+  account linking.
+- Responsive album and sign-in pages with local fonts, Lucide icons, decorative
+  sign-in photography and a progressively enhanced password-visibility control.
+- Automated tests for album ownership, validation, lifecycle rules, CSRF,
+  authentication and UI rendering; CI configured for PostgreSQL 16 and SQLite.
+- Remote-development setup instructions, scoped agent guidance, and a sourced
+  [UK competitor benchmark](docs/competitive-benchmark.md).
+- A repository structure guide and this ongoing changelog.
+
+### Changed
+
+- Refreshed the UI with clearer navigation, charcoal controls, coral accents,
+  illustrated album covers and more compact mobile metadata layouts.
+- Clarified the competitor benchmark's proposed differentiation around product
+  characteristics and measurable customer benefits, rather than visual branding.
+
+### Fixed
+
+- Insufficient contrast on album cover labels and small illustrated-cover text.
+- Undersized mobile sign-out target, increased to a minimum width of 44px.
+
+### Known Limitations
+
+- Simultaneous same-version edits on SQLite can raise an uncaught database-lock
+  error; current stale-edit regression tests use sequential requests.
+- Direct visits to unconfigured Google/Facebook login routes can return HTTP 500.
+- Uploads, real photo processing, AI, checkout, fulfilment, expiry notifications
+  and automatic file deletion remain unimplemented. Displayed expiry dates are
+  not yet an end-to-end deletion guarantee.
+- Live OAuth callbacks, production deployment and PostgreSQL-specific runtime
+  behaviour have not been verified locally. CI configuration is not evidence of
+  a successful PostgreSQL run.
+
+## Maintaining This File
+
+- Update this file in the same change as a meaningful feature, fix, security
+  change or development-workflow change.
+- Use `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` and `Security` where
+  applicable. Omit empty categories and avoid duplicating Git's commit log.
+- Describe shipped behaviour accurately: proposed capabilities belong in the
+  plan or benchmark, not under implemented features here.
+- Update known limitations when resolved and record the fix. Do not announce a
+  release, create a tag or change package versions without an explicit release
+  decision.
