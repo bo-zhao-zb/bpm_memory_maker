@@ -51,6 +51,8 @@ in `pyproject.toml` do not, on their own, declare a release.
   characteristics and measurable customer benefits, rather than visual branding.
 - Scoped the first releasable MVP to AI assessment, reversible improvements and
   downloads while retaining printing, payment and fulfilment as the next phase.
+- Isolated PostgreSQL and SQLite validation into separate CI jobs so database
+  checks cannot leave shared-runner state for one another.
 
 ### Fixed
 

@@ -38,9 +38,28 @@ jobs:
       - run: uv run python manage.py makemigrations --check --dry-run
       - run: uv run python manage.py migrate --noinput
       - run: uv run python manage.py test --verbosity 2
-      - run: uv run python manage.py test --verbosity 2
-        env:
-          DATABASE_URL: ""
+
+  sqlite:
+    runs-on: ubuntu-latest
+    env:
+      DJANGO_DEBUG: "true"
+      DATABASE_URL: ""
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Run SQLite tests
+        run: |
+          set +e
+          uv run python manage.py test --verbosity 2 2>&1 | tee /tmp/sqlite-tests.log
+          status=${PIPESTATUS[0]}
+          if (( status != 0 )); then
+            details=$(tail -n 80 /tmp/sqlite-tests.log | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
+            echo "::error title=SQLite tests failed::${details}"
+          fi
+          exit "$status"
 
   container:
     runs-on: ubuntu-latest
