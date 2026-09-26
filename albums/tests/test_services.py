@@ -1,12 +1,17 @@
+from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
+from threading import Barrier
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import close_old_connections
 from django.db.models.deletion import ProtectedError
-from django.test import TestCase, override_settings
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.utils import timezone
 
+from albums import services
 from albums.models import Album
 from albums.services import AlbumConflict, AlbumReadOnly, create_album, delete_album, update_album
 from catalog.models import PrintProduct
@@ -128,3 +133,53 @@ class AlbumServiceTests(TestCase):
             self.product.delete()
         with self.assertRaises(ProtectedError):
             self.owner.delete()
+
+
+class AlbumConcurrencyTests(TransactionTestCase):
+    def setUp(self):
+        self.owner = get_user_model().objects.create_user(username="concurrent-owner")
+        self.product = PrintProduct.objects.create(
+            code="concurrent-6x4",
+            name="Concurrent 6 x 4 in",
+            width_mm="152.40",
+            height_mm="101.60",
+        )
+        self.album = create_album(
+            owner=self.owner,
+            name="Before simultaneous edits",
+            default_print_product=self.product,
+        )
+
+    def test_simultaneous_same_version_updates_return_one_conflict(self):
+        barrier = Barrier(2)
+        original_editable_album = services._editable_album
+
+        def synchronised_editable_album(**kwargs):
+            album = original_editable_album(**kwargs)
+            barrier.wait(timeout=10)
+            return album
+
+        def edit(name):
+            close_old_connections()
+            try:
+                return update_album(
+                    owner=self.owner,
+                    album_id=self.album.pk,
+                    expected_version=1,
+                    name=name,
+                    default_print_product=self.product,
+                )
+            except Exception as error:
+                return error
+            finally:
+                close_old_connections()
+
+        with patch.object(services, "_editable_album", synchronised_editable_album):
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                outcomes = list(executor.map(edit, ("First edit", "Second edit")))
+
+        self.assertEqual(sum(isinstance(outcome, Album) for outcome in outcomes), 1)
+        self.assertEqual(sum(isinstance(outcome, AlbumConflict) for outcome in outcomes), 1)
+        self.album.refresh_from_db()
+        self.assertEqual(self.album.version, 2)
+        self.assertIn(self.album.name, {"First edit", "Second edit"})

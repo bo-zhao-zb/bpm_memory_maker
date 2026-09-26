@@ -77,6 +77,17 @@ class SignInTests(TestCase):
         )
         self.assertNotIn("_auth_user_id", self.client.session)
 
+    @override_settings(SOCIALACCOUNT_PROVIDERS={})
+    def test_unconfigured_provider_routes_return_not_found(self):
+        response = self.client.get(reverse("account_login"))
+        self.assertNotContains(response, "Continue with Google")
+        self.assertNotContains(response, "Continue with Facebook")
+        for provider in ("google", "facebook"):
+            with self.subTest(provider=provider, method="get"):
+                self.assertEqual(self.client.get(reverse(f"{provider}_login")).status_code, 404)
+            with self.subTest(provider=provider, method="post"):
+                self.assertEqual(self.client.post(reverse(f"{provider}_login")).status_code, 404)
+
     @override_settings(
         SOCIALACCOUNT_PROVIDERS={
             "google": {"APPS": [{"client_id": "test-id", "secret": "test-secret", "key": ""}]},

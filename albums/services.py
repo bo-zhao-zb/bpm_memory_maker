@@ -1,5 +1,4 @@
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.db import transaction
 from django.db.models import F
 from django.utils import timezone
 
@@ -47,7 +46,6 @@ def create_album(*, owner, name, default_print_product):
     return album
 
 
-@transaction.atomic
 def update_album(*, owner, album_id, expected_version, name, default_print_product):
     album = _editable_album(owner=owner, album_id=album_id, expected_version=expected_version)
     _validate_product(default_print_product, album.default_print_product_id)
@@ -73,16 +71,14 @@ def update_album(*, owner, album_id, expected_version, name, default_print_produ
     return album
 
 
-@transaction.atomic
 def delete_album(*, owner, album_id, expected_version):
     album = _editable_album(owner=owner, album_id=album_id, expected_version=expected_version)
-    claimed = Album.objects.filter(
+    deleted, _ = Album.objects.filter(
         pk=album.pk,
         owner=owner,
         state=Album.State.DRAFT,
         version=expected_version,
         expires_at__gt=timezone.now(),
-    ).update(version=F("version") + 1)
-    if not claimed:
+    ).delete()
+    if not deleted:
         raise AlbumConflict("This album changed in another session. Reload it before trying again.")
-    album.delete()

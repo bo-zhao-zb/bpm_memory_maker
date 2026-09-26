@@ -25,6 +25,8 @@ The [root guidance](../AGENTS.md) also applies.
 - Test configured and unavailable providers, inactive users, external `next`
   URLs and development-only login. Mocked initiation does not verify live
   callbacks, new-account creation or account-linking behaviour.
+- Keep unavailable provider routes fail-closed with HTTP 404 through the social
+  account adapter; missing credentials must not produce a server error.
 
 Run from the repository root:
 

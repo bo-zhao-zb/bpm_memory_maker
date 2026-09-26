@@ -44,12 +44,13 @@ in `pyproject.toml` do not, on their own, declare a release.
 
 - Insufficient contrast on album cover labels and small illustrated-cover text.
 - Undersized mobile sign-out target, increased to a minimum width of 44px.
+- Simultaneous same-version album edits now resolve as one successful update and
+  one recoverable conflict instead of exposing a SQLite database-lock error.
+- Unconfigured Google and Facebook login routes now return HTTP 404 rather than
+  failing with an internal server error.
 
 ### Known Limitations
 
-- Simultaneous same-version edits on SQLite can raise an uncaught database-lock
-  error; current stale-edit regression tests use sequential requests.
-- Direct visits to unconfigured Google/Facebook login routes can return HTTP 500.
 - Uploads, real photo processing, AI, checkout, fulfilment, expiry notifications
   and automatic file deletion remain unimplemented. Displayed expiry dates are
   not yet an end-to-end deletion guarantee.
