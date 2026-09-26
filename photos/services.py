@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
-from django.db import transaction
+from django.db import OperationalError, connection, transaction
 from django.db.models import F, Max
 from django.utils import timezone
 from PIL import Image, ImageOps, UnidentifiedImageError
@@ -253,7 +253,7 @@ def create_photo(*, owner, album_id, uploaded_file, upload_id=None):
 
         photo.state = Photo.State.READY
         photo.save(update_fields=["state", "updated_at"])
-    except Exception:
+    except Exception as error:
         if photo is not None and Photo.objects.filter(pk=photo.pk).exists():
             with transaction.atomic():
                 photo.delete()
@@ -267,6 +267,12 @@ def create_photo(*, owner, album_id, uploaded_file, upload_id=None):
                     updated_at=timezone.now(),
                 )
         schedule_file_deletions(saved_files)
+        if isinstance(error, OperationalError) and connection.vendor == "sqlite":
+            message = str(error).lower()
+            if "locked" in message:
+                raise AlbumCapacityReached(
+                    "A photo slot could not be reserved. Try again."
+                ) from error
         raise
 
     photo.refresh_from_db()

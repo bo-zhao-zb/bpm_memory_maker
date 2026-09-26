@@ -62,6 +62,8 @@ in `pyproject.toml` do not, on their own, declare a release.
   one recoverable conflict instead of exposing a SQLite database-lock error.
 - Unconfigured Google and Facebook login routes now return HTTP 404 rather than
   failing with an internal server error.
+- SQLite upload lock contention now returns a recoverable capacity response
+  instead of exposing a database error.
 
 ### Known Limitations
 
