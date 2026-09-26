@@ -1,0 +1,1 @@
+"""Photo command entry points."""

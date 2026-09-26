@@ -16,6 +16,7 @@ class AlbumAdmin(admin.ModelAdmin):
         "state",
         "default_print_product",
         "photo_limit",
+        "photo_count",
         "expires_at",
         "version",
         "created_at",

@@ -20,6 +20,7 @@ domain-oriented layout is intentional:
 | [accounts/](accounts/) | Custom user model and authentication |
 | [catalog/](catalog/) | Print products, admin and catalogue seeding |
 | [albums/](albums/) | Album models, service-layer rules, forms, views and tests |
+| [photos/](photos/) | Private photo assets, validation, preview generation and downloads |
 | [templates/](templates/) | Shared shell, reusable components and namespaced app pages |
 | [static/](static/) | Local CSS, small JavaScript enhancements and licensed assets |
 | [.github/workflows/](.github/workflows/) | Automated checks, including both database configurations |
@@ -75,11 +76,14 @@ PostgreSQL; CI runs against PostgreSQL 16 and SQLite.
 	without replacing administrator changes; these are not fulfilment-provider products.
 - Responsive photo-studio interface with local photography, fonts, Lucide icons
 	and a progressively enhanced password-visibility control.
+- Private JPEG, PNG and HEIC/HEIF uploads on the configured host filesystem,
+  metadata-free oriented previews, per-file progress, owner-checked downloads
+  and deletion. Original bytes remain unchanged.
 - Google/Facebook OAuth entry points through django-allauth; no automatic account
 	linking by matching email. Live provider callbacks still require credentials and testing.
 
-Only album metadata is stored in this milestone. Uploads, photo limits during upload,
-expiry notifications/deletion jobs, AI, checkout and fulfilment are not implemented.
+Uploaded photos are processed synchronously in this milestone. Expiry
+notifications/deletion jobs, AI, album archives, checkout and fulfilment are not implemented.
 Album admin is read-only; workflow actions must not bypass the service's concurrency
 checks. Print products can be edited or deactivated; referenced products cannot be deleted.
 

@@ -39,11 +39,13 @@ INSTALLED_APPS = [
     "accounts",
     "catalog",
     "albums",
+    "photos",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "photos.middleware.PhotoUploadSizeLimitMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "allauth.account.middleware.AccountMiddleware",
@@ -144,8 +146,30 @@ EMAIL_BACKEND = os.getenv(
 )
 ALBUM_PHOTO_LIMIT = int(os.getenv("ALBUM_PHOTO_LIMIT", "100"))
 DRAFT_RETENTION_DAYS = int(os.getenv("DRAFT_RETENTION_DAYS", "30"))
-if ALBUM_PHOTO_LIMIT < 1 or DRAFT_RETENTION_DAYS < 1:
-    raise ImproperlyConfigured("Album limits and retention days must be positive integers.")
+PHOTO_MAX_FILE_SIZE = int(os.getenv("PHOTO_MAX_FILE_SIZE", str(25 * 1024 * 1024)))
+PHOTO_MAX_REQUEST_SIZE = int(os.getenv("PHOTO_MAX_REQUEST_SIZE", str(27 * 1024 * 1024)))
+PHOTO_MAX_FILES_PER_REQUEST = int(os.getenv("PHOTO_MAX_FILES_PER_REQUEST", "20"))
+PHOTO_MAX_PIXELS = int(os.getenv("PHOTO_MAX_PIXELS", "50000000"))
+PHOTO_PREVIEW_MAX_DIMENSION = int(os.getenv("PHOTO_PREVIEW_MAX_DIMENSION", "1600"))
+PHOTO_PREVIEW_JPEG_QUALITY = int(os.getenv("PHOTO_PREVIEW_JPEG_QUALITY", "85"))
+if (
+    any(
+        value < 1
+        for value in (
+            ALBUM_PHOTO_LIMIT,
+            DRAFT_RETENTION_DAYS,
+            PHOTO_MAX_FILE_SIZE,
+            PHOTO_MAX_REQUEST_SIZE,
+            PHOTO_MAX_FILES_PER_REQUEST,
+            PHOTO_MAX_PIXELS,
+            PHOTO_PREVIEW_MAX_DIMENSION,
+        )
+    )
+    or PHOTO_MAX_REQUEST_SIZE <= PHOTO_MAX_FILE_SIZE
+    or not 1 <= PHOTO_PREVIEW_JPEG_QUALITY <= 95
+):
+    raise ImproperlyConfigured("Photo, album and retention settings contain invalid limits.")
+DATA_UPLOAD_MAX_NUMBER_FILES = PHOTO_MAX_FILES_PER_REQUEST
 
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG

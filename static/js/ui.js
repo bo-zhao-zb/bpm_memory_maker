@@ -13,3 +13,9 @@ for (const button of document.querySelectorAll("[data-password-toggle]")) {
     button.querySelector("[data-password-hide]").hidden = !visible;
   });
 }
+
+for (const form of document.querySelectorAll("form[data-confirm]")) {
+  form.addEventListener("submit", (event) => {
+    if (!confirm(form.dataset.confirm)) event.preventDefault();
+  });
+}

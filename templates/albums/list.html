@@ -17,7 +17,7 @@
           </div>
           <div class="album-summary">
             <div class="album-title"><h2>{{ album.name }}</h2>{% include "components/icon.html" with name="arrow-right" %}</div>
-            <p>{{ album.default_print_product }} <span class="meta-separator" aria-hidden="true">&middot;</span> 0 photos</p>
+            <p>{{ album.default_print_product }} <span class="meta-separator" aria-hidden="true">&middot;</span> {{ album.photo_count }} photo{{ album.photo_count|pluralize }}</p>
             <div class="album-bottom"><p class="album-date">Updated {{ album.updated_at|date:"j M Y" }}</p><span class="badge">{% if album.state == 'draft' and not album.is_editable %}Expired{% else %}{{ album.get_state_display }}{% endif %}</span></div>
           </div>
         </a>

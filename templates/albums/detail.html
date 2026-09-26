@@ -12,7 +12,40 @@
   <div><dt>Expiry date</dt><dd><time datetime="{{ album.expires_at|date:'c' }}">{{ album.expires_at|date:"j M Y, H:i T" }}</time></dd></div>
 </dl>
 <section class="photo-workspace">
-  <div class="collection-bar"><h2>Photos</h2><span>0 of {{ album.photo_limit }}</span></div>
-  <div class="empty-state">{% include "components/empty_art.html" with name="images" %}<h2>No photos yet</h2></div>
+  <div class="collection-bar"><h2>Photos</h2><span>{{ album.photo_count }} of {{ album.photo_limit }}</span></div>
+  {% if album.is_editable and album.photo_count < album.photo_limit %}
+    <form class="upload-panel" action="{% url 'photos:upload' album.pk %}" method="post" enctype="multipart/form-data" data-upload-form data-max-files="{{ photo_upload_batch_limit }}">
+      {% csrf_token %}
+      <div class="upload-copy">
+        <div class="form-symbol" aria-hidden="true">{% include "components/icon.html" with name="image-plus" %}</div>
+        <div><h2>Add your photos</h2><p>JPEG, PNG, HEIC or HEIF. Up to {{ photo_max_file_size_mb }} MB each.</p></div>
+      </div>
+      <label class="button" for="id_photos">{% include "components/icon.html" with name="upload" %} Choose photos</label>
+      <input id="id_photos" class="visually-hidden" type="file" name="photos" accept="image/jpeg,image/png,image/heic,image/heif,.heic,.heif" multiple required data-upload-input>
+      <noscript><button class="button" type="submit">Upload selected photos</button></noscript>
+      <div class="upload-queue" data-upload-queue aria-live="polite" hidden></div>
+    </form>
+  {% endif %}
+  {% if album.photos.all %}
+    <div class="photo-grid">
+      {% for photo in album.photos.all %}
+        <article class="photo-tile">
+          {% with preview=photo.preview_asset original=photo.original_asset %}
+            {% if preview %}<img src="{% url 'photos:asset' preview.pk %}" alt="{{ photo.original_filename }}" loading="lazy">{% endif %}
+            <div class="photo-tile-info">
+              <div><h3>{{ photo.original_filename }}</h3><p>{{ photo.width }} &times; {{ photo.height }} px</p></div>
+              <div class="photo-actions">
+                {% if original %}<a class="icon-link" href="{% url 'photos:asset' original.pk %}" aria-label="Download {{ photo.original_filename }}" title="Download original">{% include "components/icon.html" with name="download" %}</a>{% endif %}
+                {% if album.is_editable %}<form action="{% url 'photos:delete' photo.pk %}" method="post" data-confirm="Remove this photo from the album? This cannot be undone.">{% csrf_token %}<input type="hidden" name="version" value="{{ album.version }}"><button class="icon-link danger-icon" type="submit" aria-label="Remove {{ photo.original_filename }}" title="Remove photo">{% include "components/icon.html" with name="trash-2" %}</button></form>{% endif %}
+              </div>
+            </div>
+          {% endwith %}
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state photo-empty">{% include "components/empty_art.html" with name="images" %}<h2>No photos yet</h2></div>
+  {% endif %}
 </section>
 {% endblock %}
+{% block scripts %}{% load static %}<script src="{% static 'js/uploads.js' %}" defer></script>{% endblock %}

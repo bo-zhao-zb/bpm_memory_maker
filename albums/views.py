@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
@@ -13,7 +14,9 @@ from .services import AlbumConflict, AlbumReadOnly, create_album, delete_album, 
 
 def _owned_album(request, album_id):
     return get_object_or_404(
-        Album.objects.select_related("default_print_product"), pk=album_id, owner=request.user
+        Album.objects.select_related("default_print_product").prefetch_related("photos__assets"),
+        pk=album_id,
+        owner=request.user,
     )
 
 
@@ -28,7 +31,19 @@ def album_list(request):
 @login_required
 @require_safe
 def album_detail(request, album_id):
-    return render(request, "albums/detail.html", {"album": _owned_album(request, album_id)})
+    album = _owned_album(request, album_id)
+    return render(
+        request,
+        "albums/detail.html",
+        {
+            "album": album,
+            "photo_max_file_size_mb": settings.PHOTO_MAX_FILE_SIZE // (1024 * 1024),
+            "photo_upload_batch_limit": min(
+                settings.PHOTO_MAX_FILES_PER_REQUEST,
+                max(0, album.photo_limit - album.photo_count),
+            ),
+        },
+    )
 
 
 @login_required

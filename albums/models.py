@@ -34,6 +34,7 @@ class Album(models.Model):
     photo_limit = models.PositiveIntegerField(
         default=default_photo_limit, validators=[MinValueValidator(1)]
     )
+    photo_count = models.PositiveIntegerField(default=0)
     expires_at = models.DateTimeField(default=draft_expiry)
     version = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
     created_at = models.DateTimeField(auto_now_add=True)
@@ -48,6 +49,10 @@ class Album(models.Model):
             ),
             models.CheckConstraint(
                 condition=models.Q(version__gt=0), name="album_positive_version"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(photo_count__lte=models.F("photo_limit")),
+                name="album_photo_count_within_limit",
             ),
         ]
 

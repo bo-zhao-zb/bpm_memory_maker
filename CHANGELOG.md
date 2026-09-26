@@ -36,6 +36,10 @@ in `pyproject.toml` do not, on their own, declare a release.
   Compose baseline, VM deployment script and gated GitHub-to-Azure deployment workflow.
 - An owner guide for Azure OIDC, ACR, Key Vault, DNS, HTTPS, VM isolation and
   Google OAuth configuration.
+- Private JPEG, PNG and HEIC/HEIF uploads with decoded-image validation,
+  configurable size/pixel limits, opaque storage keys and preserved originals.
+- EXIF-oriented, metadata-free JPEG previews, per-file upload progress, private
+  owner-checked previews/downloads and file cleanup on photo or album deletion.
 
 ### Changed
 
@@ -57,9 +61,9 @@ in `pyproject.toml` do not, on their own, declare a release.
 
 ### Known Limitations
 
-- Uploads, real photo processing, AI, checkout, fulfilment, expiry notifications
-  and automatic file deletion remain unimplemented. Displayed expiry dates are
-  not yet an end-to-end deletion guarantee.
+- AI assessment/improvement, album archive downloads, checkout, fulfilment,
+  expiry notifications and automatic expiry deletion remain unimplemented.
+  Displayed expiry dates are not yet an end-to-end deletion guarantee.
 - Live OAuth callbacks, public production deployment, container execution and
   PostgreSQL-specific runtime behaviour have not been verified locally. CI and
   deployment configuration are not evidence of successful cloud operation.

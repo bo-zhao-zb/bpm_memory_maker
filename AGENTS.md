@@ -7,12 +7,13 @@
   or an instruction to expand the current task.
 - Keep the Python-first Django modular monolith: accounts, catalogue and albums
   are separate apps in one codebase. Reuse service functions for business rules.
-- Uploads, background workers, AI, payments, fulfilment and Azure production
-  deployment remain deferred. Do not select providers or provision resources
-  without agreement.
+- Private host-filesystem uploads and a gated Azure VM deployment foundation are
+  implemented. Background workers, AI, payments and fulfilment remain deferred;
+  do not select providers or provision resources without agreement.
 - Use the additional guidance in [accounts/AGENTS.md](accounts/AGENTS.md),
-  [albums/AGENTS.md](albums/AGENTS.md) and [templates/AGENTS.md](templates/AGENTS.md)
-  when touching those areas. Keep these files concise and consistent.
+  [albums/AGENTS.md](albums/AGENTS.md), [photos/AGENTS.md](photos/AGENTS.md) and
+  [templates/AGENTS.md](templates/AGENTS.md) when touching those areas. Keep
+  these files concise and consistent.
 
 ## Environment and Checks
 

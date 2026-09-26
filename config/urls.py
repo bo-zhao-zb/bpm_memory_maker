@@ -27,6 +27,7 @@ def readiness(request):
 
 urlpatterns = [
     path("", include("albums.urls")),
+    path("", include("photos.urls")),
     path("accounts/login/", SignInView.as_view(), name="account_login"),
     path("accounts/logout/", LogoutView.as_view(), name="account_logout"),
     path("accounts/", include("allauth.urls")),

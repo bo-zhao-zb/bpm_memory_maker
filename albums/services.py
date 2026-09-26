@@ -1,4 +1,5 @@
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import transaction
 from django.db.models import F
 from django.utils import timezone
 
@@ -72,13 +73,25 @@ def update_album(*, owner, album_id, expected_version, name, default_print_produ
 
 
 def delete_album(*, owner, album_id, expected_version):
+    from photos.services import process_file_deletions, queue_file_deletions
+
     album = _editable_album(owner=owner, album_id=album_id, expected_version=expected_version)
-    deleted, _ = Album.objects.filter(
-        pk=album.pk,
-        owner=owner,
-        state=Album.State.DRAFT,
-        version=expected_version,
-        expires_at__gt=timezone.now(),
-    ).delete()
-    if not deleted:
-        raise AlbumConflict("This album changed in another session. Reload it before trying again.")
+    stored_names = [
+        asset.file.name
+        for photo in album.photos.prefetch_related("assets").all()
+        for asset in photo.assets.all()
+    ]
+    with transaction.atomic():
+        deletion_ids = queue_file_deletions(stored_names)
+        deleted, _ = Album.objects.filter(
+            pk=album.pk,
+            owner=owner,
+            state=Album.State.DRAFT,
+            version=expected_version,
+            expires_at__gt=timezone.now(),
+        ).delete()
+        if not deleted:
+            raise AlbumConflict(
+                "This album changed in another session. Reload it before trying again."
+            )
+        transaction.on_commit(lambda: process_file_deletions(ids=deletion_ids))
