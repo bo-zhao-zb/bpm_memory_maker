@@ -14,7 +14,8 @@ The [root guidance](../AGENTS.md) and [album guidance](../albums/AGENTS.md) also
 - Every asset lookup must include album ownership. Downloads of originals are
   attachments; previews may be inline but remain private and non-cacheable.
 - Filesystem writes are not transactional. Clean failed writes and delete files
-  only after successful database deletion commits.
+  only after successful database deletion commits. Preserve durable
+  `StoredFileDeletion` records and the retry command when changing cleanup.
 - Keep upload limits configurable and test JPEG, PNG, HEIC/HEIF, corrupt files,
   oversized files, decompression limits, capacity, ownership and cleanup.
 

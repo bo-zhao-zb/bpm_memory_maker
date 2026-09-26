@@ -40,6 +40,8 @@ in `pyproject.toml` do not, on their own, declare a release.
   configurable size/pixel limits, opaque storage keys and preserved originals.
 - EXIF-oriented, metadata-free JPEG previews, per-file upload progress, private
   owner-checked previews/downloads and file cleanup on photo or album deletion.
+- Retry-safe upload identifiers, version-checked photo removal, bounded upload
+  requests and durable retry records for failed filesystem deletions.
 
 ### Changed
 

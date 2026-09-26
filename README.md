@@ -78,7 +78,8 @@ PostgreSQL; CI runs against PostgreSQL 16 and SQLite.
 	and a progressively enhanced password-visibility control.
 - Private JPEG, PNG and HEIC/HEIF uploads on the configured host filesystem,
   metadata-free oriented previews, per-file progress, owner-checked downloads
-  and deletion. Original bytes remain unchanged.
+	and deletion. Original bytes remain unchanged. Failed filesystem deletions
+	are retained for retry with `python manage.py retry_file_deletions`.
 - Google/Facebook OAuth entry points through django-allauth; no automatic account
 	linking by matching email. Live provider callbacks still require credentials and testing.
 
