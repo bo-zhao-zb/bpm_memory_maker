@@ -53,10 +53,10 @@ jobs:
       - name: Run SQLite tests
         run: |
           set +e
-          uv run python manage.py test --verbosity 2 2>&1 | tee /tmp/sqlite-tests.log
+          uv run python manage.py test --verbosity 0 2>&1 | tee /tmp/sqlite-tests.log
           status=${PIPESTATUS[0]}
           if (( status != 0 )); then
-            details=$(tail -n 80 /tmp/sqlite-tests.log | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
+            details=$(tail -n 120 /tmp/sqlite-tests.log | sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g')
             echo "::error title=SQLite tests failed::${details}"
           fi
           exit "$status"
