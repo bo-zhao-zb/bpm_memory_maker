@@ -32,6 +32,10 @@ in `pyproject.toml` do not, on their own, declare a release.
 - Remote-development setup instructions, scoped agent guidance, and a sourced
   [UK competitor benchmark](docs/competitive-benchmark.md).
 - A repository structure guide and this ongoing changelog.
+- A production container, release-aware health/readiness endpoints, hardened
+  Compose baseline, VM deployment script and gated GitHub-to-Azure deployment workflow.
+- An owner guide for Azure OIDC, ACR, Key Vault, DNS, HTTPS, VM isolation and
+  Google OAuth configuration.
 
 ### Changed
 
@@ -39,6 +43,8 @@ in `pyproject.toml` do not, on their own, declare a release.
   illustrated album covers and more compact mobile metadata layouts.
 - Clarified the competitor benchmark's proposed differentiation around product
   characteristics and measurable customer benefits, rather than visual branding.
+- Scoped the first releasable MVP to AI assessment, reversible improvements and
+  downloads while retaining printing, payment and fulfilment as the next phase.
 
 ### Fixed
 
@@ -54,9 +60,9 @@ in `pyproject.toml` do not, on their own, declare a release.
 - Uploads, real photo processing, AI, checkout, fulfilment, expiry notifications
   and automatic file deletion remain unimplemented. Displayed expiry dates are
   not yet an end-to-end deletion guarantee.
-- Live OAuth callbacks, production deployment and PostgreSQL-specific runtime
-  behaviour have not been verified locally. CI configuration is not evidence of
-  a successful PostgreSQL run.
+- Live OAuth callbacks, public production deployment, container execution and
+  PostgreSQL-specific runtime behaviour have not been verified locally. CI and
+  deployment configuration are not evidence of successful cloud operation.
 
 ## Maintaining This File
 

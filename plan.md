@@ -15,9 +15,27 @@ The first release will be a responsive website for desktop and mobile browsers. 
 - Prefer a small modular monolith over microservices for the first release.
 - Make limits, print products, retention periods, and AI providers configurable.
 
-## 3. MVP Scope
+## 3. Delivery Scope
 
-### In scope
+### First releasable MVP
+
+The first public milestone focuses on AI-assisted photo preparation, not payment
+or fulfilment:
+
+- Sign in and manage private albums.
+- Upload, validate, privately store and preview supported photos.
+- Run asynchronous quality assessment through configurable OpenAI or Azure model endpoints.
+- Offer a constrained set of faithful, optional improvements without replacing originals.
+- Compare original and improved versions and explicitly accept or reject results.
+- Download selected results individually or as an album archive.
+- Enforce visible retention and automatic deletion with auditable retries.
+- Deploy automatically to the public Azure-hosted production environment after verified merges.
+
+Printing remains part of the product direction and domain design, but payment,
+checkout and print-provider fulfilment are the next-phase extension. Do not expose
+controls that imply those workflows are available in the first MVP.
+
+### Full product direction
 
 - Responsive desktop and mobile web interface.
 - Sign-in with Google and Facebook.
@@ -48,6 +66,10 @@ The first release will be a responsive website for desktop and mobile browsers. 
 - Advanced animation editing or using animations as printable order assets.
 
 ## 4. Primary User Journey
+
+The journey below describes the full product direction. The first releasable MVP
+ends after the user accepts and downloads prepared photos; steps for print review,
+payment and fulfilment are retained for the next phase.
 
 1. The user signs in with Google or Facebook.
 2. The user creates an album or opens an existing draft.

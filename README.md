@@ -6,6 +6,8 @@ Python 3.12 is managed by `uv`; the VM's system Python is not modified.
 See [CHANGELOG.md](CHANGELOG.md) for notable implemented changes and known
 limitations, and [the competitor benchmark](docs/competitive-benchmark.md) for
 proposed product positioning and experience goals.
+The gated public-hosting pipeline and owner setup are documented in
+[the Azure deployment guide](docs/deployment.md).
 
 ## Project Structure
 
@@ -130,6 +132,11 @@ separate MFA/access restrictions before production. Account erasure, support aud
 workflows and real retention enforcement are also pending. Never commit credentials
 or customer photos. Dependency versions are recorded in `uv.lock`; review security
 updates regularly.
+
+The repository includes a production container, Compose definition, Caddy example,
+VM deployment script and a disabled-by-default GitHub deployment workflow. These
+files are deployment preparation, not evidence that Azure resources, DNS, backups,
+alerts or a public production service have been configured or verified.
 
 ## Recovery Checkpoints
 

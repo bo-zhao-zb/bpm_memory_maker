@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+umask 027
+
+readonly IMAGE_REF="${1:-}"
+readonly RELEASE_ID="${2:-}"
+readonly CONFIG_FILE="/etc/bpm-memory-maker/deploy.conf"
+readonly COMPOSE_FILE="/opt/bpm-memory-maker/compose.production.yml"
+readonly STATE_DIR="/var/lib/bpm-memory-maker"
+readonly CURRENT_STATE="${STATE_DIR}/current.env"
+readonly NEXT_STATE="${STATE_DIR}/next.env"
+readonly RUNTIME_DIR="/run/bpm-memory-maker"
+readonly RUNTIME_ENV="${RUNTIME_DIR}/${RELEASE_ID}.env"
+readonly ROLLBACK_STATE="${RUNTIME_DIR}/rollback.env"
+
+if [[ $EUID -ne 0 ]]; then
+    echo "Run bpm-deploy as root." >&2
+    exit 1
+fi
+
+if [[ ! "$IMAGE_REF" =~ ^[a-z0-9.-]+\.azurecr\.io/[a-z0-9._/-]+@sha256:[0-9a-f]{64}$ ]]; then
+    echo "Expected an immutable Azure Container Registry image digest." >&2
+    exit 1
+fi
+if [[ ! "$RELEASE_ID" =~ ^release-[0-9]{8}\.[0-9]+$ ]]; then
+    echo "Expected a release identifier such as release-20260926.42." >&2
+    exit 1
+fi
+if [[ ! -r "$CONFIG_FILE" ]]; then
+    echo "Missing $CONFIG_FILE." >&2
+    exit 1
+fi
+
+# This root-owned file contains identifiers and paths, never application secrets.
+source "$CONFIG_FILE"
+: "${AZURE_ACR_NAME:?Set AZURE_ACR_NAME in $CONFIG_FILE}"
+: "${AZURE_KEY_VAULT_NAME:?Set AZURE_KEY_VAULT_NAME in $CONFIG_FILE}"
+: "${AZURE_ENV_SECRET_NAME:?Set AZURE_ENV_SECRET_NAME in $CONFIG_FILE}"
+: "${APP_DOMAIN:?Set APP_DOMAIN in $CONFIG_FILE}"
+: "${MEDIA_ROOT_HOST:?Set MEDIA_ROOT_HOST in $CONFIG_FILE}"
+
+for command in az curl docker flock sort; do
+    command -v "$command" >/dev/null || { echo "Missing command: $command" >&2; exit 1; }
+done
+
+compose_version=$(docker compose version --short | sed 's/^v//')
+if [[ "$(printf '%s\n' "2.30.0" "$compose_version" | sort -V | head -n1)" != "2.30.0" ]]; then
+    echo "Docker Compose 2.30.0 or newer is required; found $compose_version." >&2
+    exit 1
+fi
+
+install -d -m 0700 "$STATE_DIR" "$RUNTIME_DIR"
+install -d -o 10001 -g 10001 -m 0750 "$MEDIA_ROOT_HOST"
+exec 9>"${STATE_DIR}/deploy.lock"
+flock -n 9 || { echo "Another deployment is already running." >&2; exit 1; }
+
+az login --identity --allow-no-subscriptions >/dev/null
+az acr login --name "$AZURE_ACR_NAME" >/dev/null
+az keyvault secret show \
+    --vault-name "$AZURE_KEY_VAULT_NAME" \
+    --name "$AZURE_ENV_SECRET_NAME" \
+    --query value \
+    --output tsv > "$RUNTIME_ENV"
+chmod 0600 "$RUNTIME_ENV"
+
+for setting in DJANGO_SECRET_KEY DJANGO_ALLOWED_HOSTS DJANGO_CSRF_TRUSTED_ORIGINS DATABASE_URL; do
+    grep -q "^${setting}=" "$RUNTIME_ENV" || {
+        echo "Runtime environment is missing $setting." >&2
+        exit 1
+    }
+done
+
+docker pull "$IMAGE_REF"
+printf 'APP_IMAGE=%s\nAPP_RELEASE=%s\nAPP_ENV_FILE=%s\nMEDIA_ROOT_HOST=%s\n' \
+    "$IMAGE_REF" "$RELEASE_ID" "$RUNTIME_ENV" "$MEDIA_ROOT_HOST" > "$NEXT_STATE"
+
+rollback() {
+    if [[ -s "$CURRENT_STATE" ]]; then
+        # Runtime files live in /run. After a reboot, use current Key Vault
+        # configuration to restart the prior image if its old file is gone.
+        source "$CURRENT_STATE"
+        if [[ ! -r "$APP_ENV_FILE" ]]; then
+            fallback_env="${RUNTIME_DIR}/rollback-${RELEASE_ID}.env"
+            cp "$RUNTIME_ENV" "$fallback_env"
+            chmod 0600 "$fallback_env"
+            printf 'APP_IMAGE=%s\nAPP_RELEASE=%s\nAPP_ENV_FILE=%s\nMEDIA_ROOT_HOST=%s\n' \
+                "$APP_IMAGE" "$APP_RELEASE" "$fallback_env" "$MEDIA_ROOT_HOST" > "$ROLLBACK_STATE"
+            rollback_state="$ROLLBACK_STATE"
+        else
+            rollback_state="$CURRENT_STATE"
+        fi
+        docker compose --env-file "$rollback_state" --file "$COMPOSE_FILE" \
+            up --detach --no-deps web
+    else
+        docker compose --env-file "$NEXT_STATE" --file "$COMPOSE_FILE" down
+    fi
+    rm -f "$NEXT_STATE"
+}
+
+docker compose --env-file "$NEXT_STATE" --file "$COMPOSE_FILE" \
+    run --rm --no-deps web python manage.py migrate --noinput
+docker compose --env-file "$NEXT_STATE" --file "$COMPOSE_FILE" up --detach --no-deps web
+
+healthy=false
+for attempt in {1..12}; do
+    health=$(curl --fail --silent \
+        --header "X-Forwarded-Proto: https" \
+        http://127.0.0.1:8000/health/ || true)
+    ready=$(curl --fail --silent \
+        --header "X-Forwarded-Proto: https" \
+        http://127.0.0.1:8000/ready/ || true)
+    if [[ "$health" == *"\"release\": \"${RELEASE_ID}\""* && "$ready" == *'"status": "ready"'* ]]; then
+        healthy=true
+        break
+    fi
+    sleep 5
+done
+
+if [[ "$healthy" != true ]]; then
+    echo "New release failed health checks; restoring the previous container." >&2
+    docker compose --env-file "$NEXT_STATE" --file "$COMPOSE_FILE" logs --tail 100 web >&2
+    rollback
+    exit 1
+fi
+
+public_healthy=false
+for attempt in {1..12}; do
+    public_health=$(curl --fail --silent "https://${APP_DOMAIN}/health/" || true)
+    if [[ "$public_health" == *"\"release\": \"${RELEASE_ID}\""* ]]; then
+        public_healthy=true
+        break
+    fi
+    sleep 10
+done
+
+if [[ "$public_healthy" != true ]]; then
+    echo "New release failed its public HTTPS check; restoring the previous container." >&2
+    rollback
+    exit 1
+fi
+
+mv "$NEXT_STATE" "$CURRENT_STATE"
+echo "Deployed $RELEASE_ID ($IMAGE_REF)."

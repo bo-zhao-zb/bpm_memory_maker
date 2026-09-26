@@ -41,3 +41,43 @@ jobs:
       - run: uv run python manage.py test --verbosity 2
         env:
           DATABASE_URL: ""
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --tag bpm-memory-maker:check .
+      - name: Smoke test production image
+        run: |
+          docker run --detach --name bpm-memory-maker-check \
+            --publish 127.0.0.1:8000:8000 \
+            --env APP_RELEASE=container-check \
+            --env DJANGO_ALLOWED_HOSTS=127.0.0.1,localhost \
+            --env DJANGO_CSRF_TRUSTED_ORIGINS=https://localhost \
+            --env DJANGO_MEDIA_ROOT=/tmp/media \
+            --env DJANGO_SECRET_KEY=container-check-only-secret-key-with-more-than-fifty-characters \
+            --env DATABASE_URL=sqlite:////tmp/container-check.sqlite3 \
+            bpm-memory-maker:check
+          docker exec bpm-memory-maker-check python manage.py migrate --noinput
+          for attempt in {1..12}; do
+            if health=$(curl --fail --silent \
+              --header "X-Forwarded-Proto: https" \
+              http://127.0.0.1:8000/health/) && \
+              ready=$(curl --fail --silent \
+              --header "X-Forwarded-Proto: https" \
+              http://127.0.0.1:8000/ready/) && \
+              css_status=$(curl --output /dev/null --write-out '%{http_code}' --silent \
+              --header "X-Forwarded-Proto: https" \
+              http://127.0.0.1:8000/static/css/app.css); then
+              [[ "$health" == *'"release": "container-check"'* ]]
+              [[ "$ready" == *'"status": "ready"'* ]]
+              [[ "$css_status" == "200" ]]
+              exit
+            fi
+            sleep 5
+          done
+          docker logs bpm-memory-maker-check
+          exit 1
+      - name: Container logs
+        if: always()
+        run: docker logs bpm-memory-maker-check || true

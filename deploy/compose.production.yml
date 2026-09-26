@@ -1,0 +1,40 @@
+name: bpm-memory-maker-production
+
+services:
+  web:
+    image: ${APP_IMAGE:?Set APP_IMAGE to an immutable image tag}
+    restart: unless-stopped
+    env_file:
+      - path: ${APP_ENV_FILE:?Set APP_ENV_FILE to the runtime environment file}
+        format: raw
+    environment:
+      APP_RELEASE: ${APP_RELEASE:?Set APP_RELEASE to the deployed release identifier}
+      DJANGO_MEDIA_ROOT: /srv/bpm-memory-maker/media
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - type: bind
+        source: ${MEDIA_ROOT_HOST:?Set MEDIA_ROOT_HOST to the persistent host directory}
+        target: /srv/bpm-memory-maker/media
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import urllib.request;
+          request = urllib.request.Request(
+          'http://127.0.0.1:8000/health/',
+          headers={'X-Forwarded-Proto': 'https'});
+          raise SystemExit(0 if urllib.request.urlopen(request, timeout=4).status == 200 else 1)
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
