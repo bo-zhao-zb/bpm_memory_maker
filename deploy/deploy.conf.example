@@ -1,5 +1,5 @@
 AZURE_ACR_NAME=yourregistry
 AZURE_KEY_VAULT_NAME=your-key-vault
 AZURE_ENV_SECRET_NAME=bpm-production-env
-APP_DOMAIN=photos.example.com
+APP_DOMAIN=bpmimage.com
 MEDIA_ROOT_HOST=/srv/bpm-memory-maker/production/media

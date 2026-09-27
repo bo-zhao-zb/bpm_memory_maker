@@ -45,6 +45,8 @@ in `pyproject.toml` do not, on their own, declare a release.
 
 ### Changed
 
+- Set the deployment examples and Google OAuth production callback to the chosen
+  hostname `bpmimage.com`; DNS and public deployment remain unconfigured.
 - Refreshed the UI with clearer navigation, charcoal controls, coral accents,
   illustrated album covers and more compact mobile metadata layouts.
 - Clarified the competitor benchmark's proposed differentiation around product

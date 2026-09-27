@@ -1,4 +1,4 @@
-photos.example.com {
+bpmimage.com {
     encode zstd gzip
 
     request_body {

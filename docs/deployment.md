@@ -36,7 +36,7 @@ These identifiers are safe to share when asking for command guidance:
 - Azure subscription ID and tenant ID;
 - resource group, VM, registry and Key Vault names;
 - GitHub organisation/repository name;
-- production domain, such as `photos.example.com`;
+- production domain: `bpmimage.com`;
 - managed-disk mount path; and
 - Google OAuth client ID.
 
@@ -175,8 +175,8 @@ In [Google Auth Platform](https://console.cloud.google.com/auth/overview):
 5. Add the exact production origin and callback:
 
 ```text
-https://photos.example.com
-https://photos.example.com/accounts/google/login/callback/
+https://bpmimage.com
+https://bpmimage.com/accounts/google/login/callback/
 ```
 
 6. For forwarded local development, add the exact origin/callback you use:
