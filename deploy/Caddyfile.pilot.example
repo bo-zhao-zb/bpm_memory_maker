@@ -1,0 +1,18 @@
+bpmimage.com {
+    encode zstd gzip
+
+    request_body {
+        max_size 27MB
+    }
+
+    @operator_endpoints path /admin* /health /health/ /ready /ready/
+    respond @operator_endpoints 404
+
+    reverse_proxy 127.0.0.1:8000
+
+    header {
+        -Server
+    }
+
+    log
+}

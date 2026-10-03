@@ -36,6 +36,8 @@ in `pyproject.toml` do not, on their own, declare a release.
   Compose baseline, VM deployment script and gated GitHub-to-Azure deployment workflow.
 - An owner guide for Azure OIDC, ACR, Key Vault, DNS, HTTPS, VM isolation and
   Google OAuth configuration.
+- A manual private-pilot deployment profile with persistent SQLite and media
+  storage, loopback-only application binding and restricted public operations routes.
 - Private JPEG, PNG and HEIC/HEIF uploads with decoded-image validation,
   configurable size/pixel limits, opaque storage keys and preserved originals.
 - EXIF-oriented, metadata-free JPEG previews, per-file upload progress, private

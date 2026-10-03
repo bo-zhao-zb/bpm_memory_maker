@@ -29,6 +29,23 @@ does not reverse a migration. Keep migrations backward compatible with the
 currently running release and use multi-step expand/migrate/contract changes for
 destructive schema work.
 
+## Manual Private Pilot
+
+The private pilot is a smaller deployment path than the automated production
+contract. It builds the image directly on the VM, uses SQLite and host media on
+the managed data disk, and limits application sign-in to Google OAuth test users.
+It does not require ACR, Key Vault, GitHub OIDC or the deployment workflow.
+
+Use [compose.pilot.yml](../deploy/compose.pilot.yml) with a root-owned environment
+file based on [pilot.env.example](../deploy/pilot.env.example). Create the host
+database and media directories as UID/GID `10001` before starting the container.
+The pilot Caddy example blocks public access to administration and operational
+health endpoints; run those checks through the VM loopback interface instead.
+
+SQLite is a pilot constraint, not the intended wider-launch database. Back up
+the database and media together, test restoration, and move to PostgreSQL before
+traffic or concurrency grows. A managed disk is not itself a backup.
+
 ## Values to Choose
 
 These identifiers are safe to share when asking for command guidance:

@@ -1,0 +1,29 @@
+name: bpm-memory-maker-pilot
+
+services:
+  web:
+    build:
+      context: ..
+    image: bpm-memory-maker:pilot
+    restart: unless-stopped
+    env_file:
+      - path: ${APP_ENV_FILE:?Set APP_ENV_FILE to the pilot environment file}
+        format: raw
+    environment:
+      APP_RELEASE: ${APP_RELEASE:?Set APP_RELEASE to the pilot release identifier}
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - type: bind
+        source: ${DATABASE_ROOT_HOST:?Set DATABASE_ROOT_HOST to the persistent database directory}
+        target: /srv/bpm-memory-maker/database
+      - type: bind
+        source: ${MEDIA_ROOT_HOST:?Set MEDIA_ROOT_HOST to the persistent media directory}
+        target: /srv/bpm-memory-maker/media
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
